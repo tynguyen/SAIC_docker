@@ -1,4 +1,4 @@
-apt-get install -y python3.7 python3.7-tk
+apt-get install -y python3.7 python3.7-tk python3-dev
 
 apt-get install -y python3-pip
 alias pip="python3.7 -m pip"

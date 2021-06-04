@@ -164,3 +164,6 @@ set noeb vb t_vb=
 
 " fzf
 map ; :Files 
+
+" Enable Youcompleteme                                                                                        
+set encoding=utf-8     

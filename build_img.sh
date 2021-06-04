@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+!/usr/bin/env bash
 ```
 #  Usage: bash build_img.sh <folder_to_the_Docker_file> <name> <tag>
 
@@ -27,7 +27,7 @@ fi
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 echo "[WARNING] Note: remove '/' at the end of the given directory!"
 
-if [ ! -d $DIR/$1 ]
+if [ ! -n $DIR/$1 ]
 then
   echo "[ERROR] Directory to the Dockerfile must be in the same repo with this script"
   echo "What you've given: $DIR/$1 not exists!"
@@ -92,7 +92,6 @@ then
 
 fi 
 
-
 if [ -n "${BASE_DOCKER_IMG_NAME}" ]
 then 
   docker build --rm=true -t $image_plus_tag --build-arg user_id=$user_id \
@@ -102,14 +101,21 @@ then
 	       --build-arg cudnn_version=$CUDNN_VERSION\
 	       --build-arg base_docker_img_name=$BASE_DOCKER_IMG_NAME\
 	       --build-arg base_docker_img_tag=$BASE_DOCKER_IMG_TAG\
-	       $DIR/$1
+	       --build-arg pkg_list_dir=installation_scripts\
+	       --build-arg cfg_dir=cfg_scripts\
+	       --build-arg pkg_manager_file=${1%/Dockerfile}/package_manager.sh\
+	       -f $DIR/$1 .
 else 
   docker build --rm=true -t $image_plus_tag --build-arg user_id=$user_id \
 	       --build-arg user_name=$user_name	\
 	       --build-arg g_id=$g_id \
 	       --build-arg cuda_version=$CUDA_VERSION\
 	       --build-arg cudnn_version=$CUDNN_VERSION\
-	       $DIR/$1
+	       --build-arg pkg_list_dir=installation_scripts\
+	       --build-arg cfg_dir=cfg_scripts\
+	       --build-arg pkg_manager_file=${1%/Dockerfile}/package_manager.sh\
+	       -f $DIR/$1 .
+	      
 fi
 #docker tag $image_plus_tag $image_name:latest
 

@@ -8,22 +8,23 @@ tynguyen@seas.upenn.edu
 
 # Structure 
 Dockerfiles are organized in an hierarchical way as followings:
-* ubuntu<version>
-    * cuda<version>
-        * base
+* installation_scripts : contain all scripts, each of which installs a specific package. 
+    * install_<pkg_name1>.sh
+    * install_<pkg_name2>.sh
+    * ... 
+* ubuntu<version> : contain all Dockerfiles for a specific Ubuntu version
+    * cuda<version> : contain all Dockerfiles for a specific CUDA version
+        * base : contain the Dockerfiles for the base image
             * Dockerfile
-            * installation_file1
-            * installation_file2
-        * dev
+            * package_manager.sh : lists all (optional) package installation scripts for this image, obtained from installatio_scrpts
+        * dev : contain the Dockerfile the dev image which is built upon on the base image 
             * Dockerfile
-            * some_installation_file1
-            * some_installation_file2
+            * package_manager.sh : lists all (optional) package installation scripts for this image, obtained from installatio_scrpts
 
-To build your own docker image with new packages, all you need is to create installation files, put them into the `dev` subfolder and run
+To build your own docker image with new packages, all you need is to create installation files, put them into the `installation_scripts` folder, add one line to the package_manager.sh and run
 ```
-bash build_img.sh ubuntu<version>/cuda<version>/dev
+bash build_img.sh ubuntu<version>/cuda<version>/dev/Dockerfile
 ```
-Note: there should be NO `/` at the end of the given directory in the above example. 
 
 ## Base image: saic/ubuntu1804:cuda12.0
 Based on nvidia/cuda:10.2-devel-ubuntu18.04
@@ -31,7 +32,10 @@ Based on nvidia/cuda:10.2-devel-ubuntu18.04
 - [x] cuda10.2
 - [x] cudnn8 
 - [x] python3.7
+- [x] cmake 3.20.3 
+- [x] vim 8.2 
 - [x] Opencv3 python3.7 via pip :-( 
+- [x] YouCompleteMe for VIM. Not work yet! 
 
 (Optional) In order to build the base image, you need to install some prerequisites packages on the host machine. 
 ```
@@ -98,14 +102,11 @@ touch Dockerfile
 To make it easier to manage which packages installed in the image, for each package supposed to be intalled in the image, one should create a script
 i.e
 ```
-touch install_pytorch.sh
-chmod +x install_pytorch.sh
+touch SAIC_docker/installation_scripts/install_pytorch.sh
 ``` 
-Remove all "sudo" in the install_pytorch.sh. Then, in the Dockerfile, include
-
+Remove all "sudo" in the install_pytorch.sh. Then, make a package_manager.sh file in the same repo with Dockerfile, and write, for example:
 ```
-ADD install_pytorch.sh /install_pytorch.sh
-RUN /install_pytorch.sh
+$PKG_LIST_DIR/install_pytorch.sh
 ```
 
 ## Note
