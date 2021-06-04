@@ -88,7 +88,12 @@ echo ">>> Options for this container: $DOCKER_OPTS"
 # -v "/opt/sublime_text:/opt/sublime_text" \
 
 #--rm will remove the container after exitting
-docker run -it \
+
+# In order to enable NVIDIA-driver use within a container, you need either
+# - use nvidia-docker (install nvidia-docker-tool)
+# - Or put a flag '--runtime nvidia' after 'docker run'
+
+docker run -it --gpus all\
   --name=$CONTAINER_NAME \
   -p $PORT_OPTS \
   -e DISPLAY \
@@ -99,6 +104,7 @@ docker run -it \
   -v "/etc/localtime:/etc/localtime:ro" \
   -v "/dev/input:/dev/input" \
   --privileged \
+  --runtime nvidia\
   --security-opt seccomp=unconfined \
   $DOCKER_OPTS \
   $IMG	\

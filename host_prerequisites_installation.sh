@@ -1,5 +1,6 @@
 # Assume that the host machine has already had NVIDIA driver, CUDA installed.
 # The following step will install nvidia-container-toolkit
+# From: https://docs.nvidia.com/datacenter/cloud-native/container-toolkit/install-guide.html
 curl https://get.docker.com | sh \
     && sudo systemctl --now enable docker
 distribution=$(. /etc/os-release;echo $ID$VERSION_ID) \

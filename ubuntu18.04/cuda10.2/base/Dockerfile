@@ -10,15 +10,21 @@ ARG base_docker_img_tag="10.2-devel-ubuntu18.04"
 FROM ${base_docker_img_name}:${base_docker_img_tag}
 #FROM nvidia/cuda:10.2-devel-ubuntu18.04
 
-
 RUN apt-get update
+RUN DEBIAN_FRONTEND="noninteractive" apt-get -y install tzdata
+
+
+# Install timezone using script
+# NOTE: make sure that file install_timezone.sh is executable
+ADD install_timezone.sh /install_timezone.sh
+RUN /install_timezone.sh
 
 # Add username and add to sudoers group to install tensorflow ...
 ARG user_name=tynguyen
 ARG user_id=1000
 ARG g_id=1000
-## Replace 1012 with your user / group id of the machine on which docker is installed
-# To find this, use: $id -u  and $id -g 
+
+# To find user id on your host machine, use: $id -u  and $id -g 
 RUN apt-get install sudo
 RUN export uid=$user_id gid=$g_id && \
     mkdir -p /home/$user_name && \
@@ -30,12 +36,8 @@ RUN export uid=$user_id gid=$g_id && \
 
 # Install cudnn
 # NOTE: in order to make the following ENV works, the following lines must be given after FROM ...
-ARG cudnn_version="8.2.0.53"
-ARG cuda_version="cuda10.2"
-ENV CUDA_VERSION=$cuda_version
-ENV CUDNN_VERSION=$cudnn_version 
-#ENV CUDA_VERSION cuda10.2
-#ENV CUDNN_VERSION 8.2.0.53
+ENV CUDA_VERSION="cuda10.2"
+ENV CUDNN_VERSION="8.2.0.53"
 
 LABEL com.nvidia.cudnn.version="${CUDNN_VERSION}"
 
@@ -48,8 +50,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     rm -rf /var/lib/apt/lists/*
 
 
-#ENV DEBIAN_FRONTEND noninteractive
-
 # Install object detection api dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends apt-utils
 
@@ -60,13 +60,6 @@ RUN /install_essential_packages.sh
 # Install python3.7
 ADD install_python3.7.sh /install_python3.7.sh
 RUN /install_python3.7.sh
-
-# Install timezone using script
-# NOTE: make sure that file install_timezone.sh is executable
-ADD install_timezone.sh /install_timezone.sh
-RUN /install_timezone.sh
-#RUN DEBIAN_FRONTEND="noninteractive" apt-get -y install tzdata
-
 
 # Install wget (to make life easier below) and editors (to allow people to edit
 # the files inside the container)
@@ -89,11 +82,12 @@ RUN git clone https://github.com/VundleVim/Vundle.vim.git $HOME/.vim/bundle/Vund
 ADD Cfg/.tmux.conf $HOME/.tmux.conf
 
 
-# Copy scripts that contains useful commands i.e .bashrc, my_robot_env.sh .... 
+# (Optional) Copy scripts that contains useful commands i.e .bashrc, my_robot_env.sh .... 
 COPY Env/.bashrc $HOME/.bashrc
 RUN mkdir $HOME/Env 
 COPY Env $HOME/
 
+# Default repository after logging in
 WORKDIR $HOME
 
 

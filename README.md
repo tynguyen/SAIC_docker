@@ -8,16 +8,16 @@ tynguyen@seas.upenn.edu
 
 # Structure 
 Dockerfiles are organized in an hierarchical way as followings:
-ubuntu<version>
-    cuda<version>
-        base
-            Dockerfile
-            installation_file1
-            installation_file2
-        dev
-            Dockerfile
-            some_installation_file1
-            some_installation_file2
+* ubuntu<version>
+    * cuda<version>
+        * base
+            * Dockerfile
+            * installation_file1
+            * installation_file2
+        * dev
+            * Dockerfile
+            * some_installation_file1
+            * some_installation_file2
 
 To build your own docker image with new packages, all you need is to create installation files, put them into the `dev` subfolder and run
 ```
@@ -38,10 +38,56 @@ Based on nvidia/cuda:10.2-devel-ubuntu18.04
 bash host_prerequisites_installation.sh
 ```
 
-## Dev images
+# Installation
+First, download the repo
+```
+git clone --recursive-submodules https://github.com/tynguyen/SAIC_docker.git
+cd SAIC_docker
+```
 
+Set the docker image and the name of the container by modifying, for example:
+```
+DOCKER_IMG_NAME="tynguyen_base_ubuntu1804_cuda10.0_docker:latest"
+CONTAINER_NAME="tynguyen_base"
+```
+in my_docker_env.sh 
 
-## (Optional) Create a new image from a base image
+Then, run this shell script
+```
+source my_docker_env.sh
+```
+Note: you need to run this my_docker_env.sh everytime you open a new terminal. To avoid this step, one way is to copy this file to $HOME/Env/my_docker_env.sh and in the $HOME/.bashrc file, add the following line
+```
+source ~/Env/my_docker_env.sh
+```
+
+# Usage 
+By default, you will be using a docker image that is already created. Its name is given in `my_docker_env.sh`. 
+Follow the a few steps below to create a container which is basically an Ubuntu machine of your own and run it. 
+## Create the container 
+Name of the image and container should be already set in my_docker_env.sh file
+```
+bash create_container.sh <docker image> [-ws <List of folders that want to share with the container> ]
+```
+For example: 
+```
+bash create_container.sh saic/ubuntu18.04:base-cuda10.2-cudnn8 ~/github_ws ~/bags
+
+```
+In this example, the created container will share two folders: ~/github_ws and ~/bags with the host machine. 
+
+# Use a container
+Once a container is created, the following scripts are used to easily manage the container.
+```
+run_container.sh: start the container (different from creating the container). This is used in case the  container is already there (check by $docker container ls -a)
+stop_container.sh: stop the container 
+rm_container.sh : remove the container
+```
+These scripts refer to $CONTAINER_NAME set in my_docker_env.sh 
+
+---
+# Advanced 
+## Create a new image from a base image
 Create a folder that contains our Dockefile
 i.e. DOCKER_FILE_FOLDER=dockerfile_path, then 
 ```
@@ -68,53 +114,3 @@ i.e.
 ```
 chmod +x install_python3.7.sh
 ```
-
-
-# Create a container 
-## Set the docker image and the name of the container by modifying: 
-```
-DOCKER_IMG_NAME="tynguyen_base_ubuntu1804_cuda10.0_docker:latest"
-CONTAINER_NAME="tynguyen_base"
-```
-in my_docker_env.sh 
-Then, run this shell script
-```
-bash my_docker_env.sh
-```
-Note: you need to run this my_docker_env.sh everytime you open a new terminal. To avoid this step, one way is to copy this file to $HOME/Env/my_docker_env.sh and in the $HOME/.bashrc file, add the following line
-```
-source ~/Env/my_docker_env.sh
-```
-
-
-## Build the Image if Not Exist Yet
-```
-bash build_img.sh <directory to the image dockerfile>
-```
-i.e 
-```
-bash build_img.sh tynguyen_base_ubuntu1804_cuda_10.0_docker 
-```
-
-## Create the container 
-Name of the image and container should be already set in my_docker_env.sh file
-```
-bash create_container.sh <docker image> [-ws <List of folders that want to share with the container> ]
-```
-For example: 
-```
-bash create_container nvidia/ubuntu:latest ~/github_ws ~/bags
-
-```
-In this example, the created container will share two folders: ~/github_ws and ~/bags with the host machine. 
-
-# Use a container
-Once a container is created, the following scripts are used to easily manage the container.
-```
-run_container.sh: start the container (different from creating the container). This is used in case the  container is already there (check by $docker container ls -a)
-stop_container.sh: stop the container 
-rm_container.sh : remove the container
-```
-These scripts refer to $CONTAINER_NAME set in my_docker_env.sh 
-
----
