@@ -10,6 +10,7 @@ apt-get update && apt-get install -y \
     
 cp $PKG_LIST_DIR/kinect_include/k4abtConfig.cmake /install/libk4abt1.0/usr/lib/cmake/k4abt/k4abtConfig.cmake 
 
+cd /
 git clone --recurse-submodules https://github.com/microsoft/Azure-Kinect-Samples.git /home/Azure-Kinect-Samples
 
 cp /install/libk4abt1.0/usr/lib/libk4abt.so /lib/x86_64-linux-gnu/

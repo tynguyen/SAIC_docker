@@ -3,6 +3,7 @@
 #######################################################################
 
 # Configuring the repositories
+cd /
 curl https://packages.microsoft.com/keys/microsoft.asc | sudo apt-key add -
 apt-add-repository https://packages.microsoft.com/ubuntu/18.04/prod
 apt-get update && apt-get install -y \

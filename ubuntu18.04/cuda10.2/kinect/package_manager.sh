@@ -11,5 +11,5 @@ $PKG_LIST_DIR/install_NVIDIA_docker.sh
 $PKG_LIST_DIR/install_azure_kinect_SDK1.3.sh
 
 # Install Azure kinect body tracking 1.0
-#$PKG_LIST_DIR/install_azure_kinect_bodytracking1.0.sh
+$PKG_LIST_DIR/install_azure_kinect_bodytracking1.0.sh
 
