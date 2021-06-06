@@ -1,6 +1,6 @@
 # For the following ARG variables, an default value is given to use if not set through --build_arg  i.e. docker build --build_arg base_docker_img_name=nvidia/cuda ....
 ARG base_docker_img_name="tynguyen/saicny_ubuntu18.04" 
-ARG base_docker_img_tag="base-cuda10.2-cudnn8"
+ARG base_docker_img_tag="dev-cuda10.2-cudnn8"
 
 FROM ${base_docker_img_name}:${base_docker_img_tag}
 
@@ -32,6 +32,12 @@ RUN export uid=$user_id gid=$g_id && \
 # Directory to installation files
 ARG pkg_list_dir="" > dir to the list of packages
 ARG pkg_manager_file="" > the pkg manager file (.sh) which runs all instalation scripts
+
+# Env variables for azure kinect SDK 
+
+# Env variables for azure kinect body tracking
+ENV PATH=${PATH}:/install/libk4abt1.0/usr/:/install/libk4abt1.0/lib/
+ENV LD_LIBRARY_PATH=${LD_LIBRARY_PATH}:/install/libk4abt1.0/usr/lib/:/home/Azure-Kinect-Sensor-SDK/build/bin/
 
 # Copy all installation script files to a folder
 ENV PKG_LIST_DIR="/installation_scripts"

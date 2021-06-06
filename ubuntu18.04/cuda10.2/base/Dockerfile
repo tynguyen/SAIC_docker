@@ -51,8 +51,8 @@ RUN export uid=$USER_ID gid=$G_ID && \
 
 # Install cudnn
 # NOTE: in order to make the following ENV works, the following lines must be given after FROM ...
-ARG CUDA_VERSION="cuda10.2"
-ARG CUDNN_VERSION="8.2.0.53"
+ENV CUDA_VERSION="cuda10.2"
+ENV CUDNN_VERSION="8.2.0.53"
 
 LABEL com.nvidia.cudnn.version="${CUDNN_VERSION}"
 

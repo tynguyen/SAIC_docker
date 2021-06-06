@@ -6,38 +6,58 @@
 #   nvidia-docker
 #   an X server
 
-# Import image name and container name from 
-if [ -n "${DOCKER_IMG_NAME}" ]
-then 
-  echo "Create a docker container '${CONTAINER_NAME}' given by CONTAINER_NAME!"  
-else 
-  echo "Sourcing my_docker_env.sh to activate '${CONTAINER_NAME}' which is empty now"  
-  source my_docker_evn.sh
-fi
+HELP()
+{
+  # Display help
+  echo "*Prerequisites: run "
+  echo "         source my_docker_env.sh"
+  echo "*Syntax: "
+  echo "         bash $(basename $0) [Options]"
+  echo "*Options:" 
+  echo "         -h: display Help"
+  echo "         -i <docker image with tag>: docker image name i.e: docker:latest. This will overwrite DOCKER_IMG_NAME and DOCKER_IMG_TAG"
+  echo "         -v <absolute path to the directory on the host machine>: share this path with the docker container "  
+  echo "         -n <name>: name of the docker container you want to creater"  
+  echo "         -u <user name>: user name in the docker container. Shared directory will be stored to /home/<user name>/"
+  echo "         -p <port mapping>: i.e: 0.0.0.0:7008: 7008" 
 
+}
+
+# Default user name
 DOCKER_USER=$(whoami)
 
-# Port mapping 
+# Default port mapping 
 PORT_OPTS=0.0.0.0:7008:7008
 
-
-if [ $# -lt 1 ]
-then
-    echo "Usage: $0 <docker image> [-ws <list of directories separated by a space to share with the container> ]"
-    echo "I.e: $0 nvidia/ubuntu:latest ~/github_ws ~/bags"
-    echo "By default, use $DOCKER_IMG_NAME:$DOCKER_IMG_TAG"
-    #exit 1
-else
-	$DOCKER_IMG_NAME=$1
-	$DOCKER_IMG_TAG=$2
-	echo "Given docker image: $DOCKER_IMG_NAME:$DOCKER_IMG_TAG"
-fi
-
-#IMG=$(basename $DOCKER_IMG_NAME)
+# Default docker image name given from $DOCKER_IMG_NAME
 IMG=$DOCKER_IMG_NAME:$DOCKER_IMG_TAG
 
-ARGS=("$@")
-WORKSPACES=("${ARGS[@]:1}")
+
+# Parse arguments
+# "i:", "v:", "n:" mean that these arg needs an additional argument
+# "h" means that no need an additional argument
+while getopts "hi:v:n:p:u" flag
+do
+  case "${flag}"  in 
+    h) # display Help
+      HELP 
+      exit;;
+    i) IMG=${OPTARG};; 
+    v) WS_DIR=${OPTARG} 
+      WS_DIRNAME=$(basename $WS_DIR)
+      echo ">> Sharing Workspace: $WS_DIR"
+      DOCKER_OPTS="$DOCKER_OPTS -v $WS_DIR:/home/$DOCKER_USER/$WS_DIRNAME:rw";;
+    n) CONTAINER_NAME=${OPTARG};; 
+    u) DOCKER_USER=${OPTARG};; 
+    p) PORT_OPTS=${OPTARG};; 
+    \?) # incorrect option
+      echo "Error: Invalid option."
+      echo "run bash $(basename $0) -h to learn more."
+      exit;;
+    esac
+done 
+
+
 
 # Make sure processes in the container can connect to the x server
 # Necessary so gazebo can create a context for OpenGL rendering (even headless)
@@ -72,16 +92,7 @@ fi
 #DOCKER_OPTS="$DOCKER_OPTS -v $GITHUB_WS:/home/$DOCKER_USER/github_ws:rw"
 
 
-echo "Workspaces: ${WORKSPACES}"
-# Share other workspaces from the command argument
-for WS_DIR in ${WORKSPACES[@]}
-do
-  WS_DIRNAME=$(basename $WS_DIR)
-  echo "Sharing Workspace! $WS_DIR"
-  DOCKER_OPTS="$DOCKER_OPTS -v $WS_DIR:/home/$DOCKER_USER/$WS_DIRNAME:rw"
-done
-
-echo ">>> Options for this container: $DOCKER_OPTS"
+echo ">> List of options given: $DOCKER_OPTS"
 
 # Mount extra volumes if needed.
 # E.g.:
@@ -93,19 +104,51 @@ echo ">>> Options for this container: $DOCKER_OPTS"
 # - use nvidia-docker (install nvidia-docker-tool)
 # - Or put a flag '--runtime nvidia' after 'docker run'
 
-docker run -it --gpus all\
-  --name=$CONTAINER_NAME \
-  -p $PORT_OPTS \
-  -e DISPLAY \
-  -e QT_X11_NO_MITSHM=1 \
-  -e XAUTHORITY=$XAUTH \
-  -v "$XAUTH:$XAUTH" \
-  -v "/tmp/.X11-unix:/tmp/.X11-unix" \
-  -v "/etc/localtime:/etc/localtime:ro" \
-  -v "/dev/input:/dev/input" \
-  --privileged \
-  --runtime nvidia\
-  --security-opt seccomp=unconfined \
-  $DOCKER_OPTS \
-  $IMG	\
-  bash
+echo "----------------------------------"
+echo ">> Creating container ${CONTAINER_NAME} from docker $IMG ...."
+xhost +
+nvidia-docker &> /dev/null
+if [ $? -ne 0 ]; then
+  docker run -it --gpus all\
+    --name=$CONTAINER_NAME \
+    -p $PORT_OPTS \
+    -e DISPLAY=$DISPLAY \
+    -e QT_X11_NO_MITSHM=1 \
+    -e XAUTHORITY=$XAUTH \
+    -v "$XAUTH:$XAUTH" \
+    -v "/tmp/.X11-unix:/tmp/.X11-unix" \
+    -e "LIBGL_ALWAYS_INDIRECT=" \
+    -e "LIBGL_ALWAYS_SOFTWARE=1" \
+    -v /etc/group:/etc/group:ro \
+    -v /etc/passwd:/etc/passwd:ro \
+    -v "/etc/localtime:/etc/localtime:ro" \
+    -v "/dev/input:/dev/input" \
+    --privileged \
+    --security-opt seccomp=unconfined \
+    $DOCKER_OPTS \
+    $IMG	\
+    bash
+else
+  docker run -it --gpus all\
+    --name=$CONTAINER_NAME \
+    -p $PORT_OPTS \
+    -e DISPLAY=$DISPLAY \
+    -e QT_X11_NO_MITSHM=1 \
+    -e XAUTHORITY=$XAUTH \
+    -v "$XAUTH:$XAUTH" \
+    -v "/tmp/.X11-unix:/tmp/.X11-unix" \
+    -e "LIBGL_ALWAYS_INDIRECT=" \
+    -e "LIBGL_ALWAYS_SOFTWARE=1" \
+    -v /etc/group:/etc/group:ro \
+    -v /etc/passwd:/etc/passwd:ro \
+    -v "/etc/localtime:/etc/localtime:ro" \
+    -v "/dev/input:/dev/input" \
+    --privileged \
+    --runtime nvidia\
+    --security-opt seccomp=unconfined \
+    $DOCKER_OPTS \
+    $IMG	\
+    bash
+fi
+echo "----------------------------------"
+

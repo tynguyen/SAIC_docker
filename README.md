@@ -71,11 +71,21 @@ Follow the a few steps below to create a container which is basically an Ubuntu 
 ## Create the container 
 Name of the image and container should be already set in my_docker_env.sh file
 ```
-bash create_container.sh <docker image> [-ws <List of folders that want to share with the container> ]
+*Prerequisites: run 
+         source my_docker_env.sh
+*Syntax: 
+         bash $(basename $0) [Options]
+*Options: 
+         -h: display Help
+         -i <docker image with tag>: docker image name i.e: docker:latest. This will overwrite DOCKER_IMG_NAME and DOCKER_IMG_TAG
+         -v <absolute path to the directory on the host machine>: share this path with the docker container 
+         -n <name>: name of the docker container you want to creater  
+         -u <user name>: user name in the docker container. Shared directory will be stored to /home/<user name>/
+         -p <port mapping>: i.e: 0.0.0.0:7008:7008 
 ```
 For example: 
 ```
-bash create_container.sh saic/ubuntu18.04:base-cuda10.2-cudnn8 ~/github_ws ~/bags
+bash create_container.sh -i saic/ubuntu18.04:base-cuda10.2-cudnn8 -v ~/github_ws -v ~/bags
 
 ```
 In this example, the created container will share two folders: ~/github_ws and ~/bags with the host machine. 

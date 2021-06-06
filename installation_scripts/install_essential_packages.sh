@@ -5,4 +5,6 @@ apt-get install -y git
 apt-get install -y apt-utils 
 apt-get install -y curl 
 apt-get install -y zip unzip 
+apt-get install -y nautlus gedit net-tools
 apt-get update
+
