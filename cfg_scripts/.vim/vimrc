@@ -167,3 +167,5 @@ map ; :Files
 
 " Enable Youcompleteme                                                                                        
 set encoding=utf-8     
+
+silent!

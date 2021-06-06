@@ -12,6 +12,7 @@ FROM ${base_docker_img_name}:${base_docker_img_tag}
 
 RUN apt-get update
 RUN DEBIAN_FRONTEND="noninteractive" apt-get -y install tzdata
+RUN apt-get update && apt install -y software-properties-common
 
 #---------------------------------------#
 # Install packages
@@ -33,11 +34,10 @@ RUN chmod +x $PKG_MANGER_FILE
 # We install timezone first. Other packages will be installed later
 RUN $PKG_LIST_DIR/install_timezone.sh
 
-
-# Add username and add to sudoers group to install tensorflow ...
-ARG user_name=saic
-ARG user_id=1000
-ARG g_id=1000
+# Add username and add to sudoers group. saicny will be one default user 
+ENV user_name saicny
+ENV user_id 0
+ENV g_id 0
 
 # To find user id on your host machine, use: $id -u  and $id -g 
 RUN apt-get install sudo
@@ -75,11 +75,8 @@ RUN apt-get update && \
     apt-get install -y wget emacs nano tmux
 
 
-
-
-
 #-----------------------------#
-# (Optional) Other package installation using th package manager file
+# (Optional) Other package installation using the package manager file
 RUN $PKG_MANGER_FILE
 
 # Cleaning script files
@@ -101,8 +98,8 @@ RUN tar -xvf cmake-3.20.3.tar.gz
 RUN cd cmake-3.20.3 && ./bootstrap && make && make install
 
 # Install vim8.2 which is necessary for YouCompleteMe (vim needs to be >= 8.1)
-RUN apt-get update && apt install -y software-properties-common
-RUN add-apt-repository ppa:jonathonf/vim 
+RUN apt-get update 
+RUN add-apt-repository ppa:jonathonf/vim -y
 RUN apt-get update 
 RUN apt-get install -y vim 
 RUN apt-get install -y vim-gtk3 vim-nox
@@ -121,7 +118,14 @@ COPY $cfg_dir $CFG_DIR
 RUN mkdir -p $HOME/.vim
 RUN rm -rf $HOME/.vim/*
 COPY $cfg_dir/.vim $HOME/.vim
-RUN git clone --recursive-submodules https://github.com/VundleVim/Vundle.vim.git $HOME/.vim/bundle/Vundle.vim 
+COPY $cfg_dir/.vim/colors $HOME/.vim/colors
+RUN git clone --recurse-submodules https://github.com/VundleVim/Vundle.vim.git $HOME/.vim/bundle/Vundle.vim 
+
+# Currently, the following lines have to be run manually upon loggin into the docker
+#RUN vim +PlugInstall +qall 
+#RUN cd $HOME/.vim/bundle/YouCompleteMe && python3 install.py -y
+#RUN cd $HOME/.vim/bundle/YouCompleteMe && python3 install.py -y
+
 # (Optional) Configure tmux
 COPY $cfg_dir/.tmux.conf $HOME/.tmux.conf
 

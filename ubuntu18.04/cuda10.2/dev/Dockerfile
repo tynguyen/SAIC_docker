@@ -10,10 +10,12 @@ ENV DEBIAN_FRONTEND noninteractive
 USER root
 RUN apt-get update
 
-# Add username and add to sudoers group to install tensorflow ...
+
+# Add an user. By default, user name is given from build_img.sh
 ARG user_name=saic
 ARG user_id=1000
 ARG g_id=1000
+
 # To find user id on your host machine, use: $id -u  and $id -g 
 RUN apt-get install sudo
 RUN export uid=$user_id gid=$g_id && \
@@ -58,17 +60,22 @@ ENV HOME /home/$user_name
 
 # (Optional) Configure .bashrc, vim, tmux
 ARG cfg_dir="cfg_scripts"
+ENV CFG_DIR=$cfg_dir
 COPY $cfg_dir/.bashrc $HOME/.bashrc
 ENV CFG_DIR=$HOME/Env
 COPY $cfg_dir $CFG_DIR
 
+# Install vim
 RUN mkdir -p $HOME/.vim
 RUN rm -rf $HOME/.vim/*
-COPY $cfg_dir/.vim $HOME/.vim
+COPY $CFG_DIR/.vim $HOME/.vim
 RUN git clone https://github.com/VundleVim/Vundle.vim.git $HOME/.vim/bundle/Vundle.vim
+RUN vim +PluginInstall +qall
+RUN cd $HOME/.vim/bundle/YouCompleteMe && python3 install.py
+RUN cd $HOME/.vim/bundle/YouCompleteMe && python3 install.py
 
 # (Optional) Configure tmux
-COPY $cfg_dir/.tmux.conf $HOME/.tmux.conf
+COPY $CFG_DIR/.tmux.conf $HOME/.tmux.conf
 
 # Default repository after logging in
 WORKDIR $HOME

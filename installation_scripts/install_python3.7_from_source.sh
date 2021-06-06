@@ -9,3 +9,7 @@ tar -xvf Python-3.7.9.tgz && cd Python-3.7.9
 ./configure --enable-optimizations --enable-shared 
 make -j 4
 make altinstall
+
+# Make sure python3.7 is the default python3
+update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.6 1
+update-alternatives --install /usr/bin/python3 python3 /usr/local/bin/python3.7 2

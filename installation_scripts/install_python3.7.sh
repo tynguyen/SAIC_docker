@@ -13,4 +13,4 @@ python3.7 -m pip install matplotlib && \
 python3.7 -m pip install numpy 
 
 # Make sure python3.7 is the default python3
-update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.7 1
+#update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.7 1
