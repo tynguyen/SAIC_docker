@@ -35,24 +35,24 @@ RUN chmod +x $PKG_MANGER_FILE
 RUN $PKG_LIST_DIR/install_timezone.sh
 
 # Add username and add to sudoers group. saicny will be one default user 
-ENV user_name saicny
-ENV user_id 0
-ENV g_id 0
+ARG USER_NAME=saicny > Note: do not use ENV because it will be kept to next layers
+ARG USER_ID=0
+ARG G_ID=0
 
 # To find user id on your host machine, use: $id -u  and $id -g 
 RUN apt-get install sudo
-RUN export uid=$user_id gid=$g_id && \
-    mkdir -p /home/$user_name && \
-    echo "$user_name:x:${uid}:${gid}:$user_name,,,:/home/$user_name:/bin/bash" >> /etc/passwd && \
-    echo "$user_name:x:${uid}:" >> /etc/group && \
-    echo "$user_name ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/$user_name && \
-    chmod 0440 /etc/sudoers.d/$user_name && \
-    chown ${uid}:${gid} -R /home/$user_name
+RUN export uid=$USER_ID gid=$G_ID && \
+    mkdir -p /home/$USER_NAME && \
+    echo "$USER_NAME:x:${uid}:${gid}:$USER_NAME,,,:/home/$USER_NAME:/bin/bash" >> /etc/passwd && \
+    echo "$USER_NAME:x:${uid}:" >> /etc/group && \
+    echo "$USER_NAME ALL=(ALL) NOPASSWD: ALL" > /etc/sudoers.d/$USER_NAME && \
+    chmod 0440 /etc/sudoers.d/$USER_NAME && \
+    chown ${uid}:${gid} -R /home/$USER_NAME
 
 # Install cudnn
 # NOTE: in order to make the following ENV works, the following lines must be given after FROM ...
-ENV CUDA_VERSION="cuda10.2"
-ENV CUDNN_VERSION="8.2.0.53"
+ARG CUDA_VERSION="cuda10.2"
+ARG CUDNN_VERSION="8.2.0.53"
 
 LABEL com.nvidia.cudnn.version="${CUDNN_VERSION}"
 
@@ -106,13 +106,13 @@ RUN apt-get install -y vim-gtk3 vim-nox
 
 
 # Switch to the user 
-USER $user_name
-ENV HOME /home/$user_name
+USER $USER_NAME
+ARG HOME=/home/$USER_NAME
 
 # (Optional) Configure .bashrc, vim, tmux
 ARG cfg_dir="cfg_scripts"
 COPY $cfg_dir/.bashrc $HOME/.bashrc
-ENV CFG_DIR=$HOME/Env
+ARG CFG_DIR=$HOME/Env
 COPY $cfg_dir $CFG_DIR
 
 RUN mkdir -p $HOME/.vim

@@ -67,8 +67,9 @@ else
 fi  
 
 
-echo "Dir: $DIR"
+echo "Root dir: $DIR"
 echo "Image name: $image_name"
+echo "user_name: $user_name"
 echo "group id: $g_id"
 echo "user_id: $user_id"
 

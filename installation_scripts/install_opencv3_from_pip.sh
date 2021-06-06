@@ -6,8 +6,8 @@
 #                       SCRIPT OPTIONS                                 |
 # ---------------------------------------------------------------------|
 OPENCV_VERSION='4.2.0.34'       # Version to be installed
-OPENCV_CONTRIB='NO'          # Install OpenCV's extra modules (YES/NO)
-PYTHON_BIN='python3.7'
+OPENCV_CONTRIB='YES'          # Install OpenCV's extra modules (YES/NO)
+PYTHON_BIN='python3'
 
 apt-get -y update
 # apt-get -y upgrade       # Uncomment to install new versions of packages currently installed

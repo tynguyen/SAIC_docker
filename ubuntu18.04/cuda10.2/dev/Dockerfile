@@ -1,5 +1,5 @@
 # For the following ARG variables, an default value is given to use if not set through --build_arg  i.e. docker build --build_arg base_docker_img_name=nvidia/cuda ....
-ARG base_docker_img_name="saic/ubuntu18.04" 
+ARG base_docker_img_name="tynguyen/saicny_ubuntu18.04" 
 ARG base_docker_img_tag="base-cuda10.2-cudnn8"
 
 FROM ${base_docker_img_name}:${base_docker_img_tag}
@@ -12,9 +12,10 @@ RUN apt-get update
 
 
 # Add an user. By default, user name is given from build_img.sh
-ARG user_name=saic
+ARG user_name=saicny
 ARG user_id=1000
-ARG g_id=1000
+ARG g_id=100
+RUN echo "----------------------creating an user $user_name" 
 
 # To find user id on your host machine, use: $id -u  and $id -g 
 RUN apt-get install sudo
@@ -46,36 +47,34 @@ RUN $PKG_MANGER_FILE
 RUN rm $PKG_MANGER_FILE
 RUN rm -rf $PKG_LIST_DIR
 
-# Install pytorch1.8 which is compatible with CUDA10.2
-#ADD $sh_dir/install_pytorch1.8.sh /install_pytorch1.8.sh
-#RUN chmod +x /install_pytorch1.8.sh
-#RUN /install_pytorch1.8.sh
-#RUN rm /install_pytorch1.8.sh
-
-
 #----------------------------------------------#
 # Switch to your user name. Not be abl to install any that requires SUDO 
 USER $user_name
-ENV HOME /home/$user_name
+ARG HOME=/home/$user_name
 
 # (Optional) Configure .bashrc, vim, tmux
 ARG cfg_dir="cfg_scripts"
-ENV CFG_DIR=$cfg_dir
 COPY $cfg_dir/.bashrc $HOME/.bashrc
-ENV CFG_DIR=$HOME/Env
+ARG CFG_DIR=$HOME/Env
 COPY $cfg_dir $CFG_DIR
 
 # Install vim
+RUN echo "Installing vim for user ${user_name}"
+RUN echo "Installing vim to HOME:  $HOME"
+RUN echo "CFG_DIR:  $CFG_DIR"
 RUN mkdir -p $HOME/.vim
 RUN rm -rf $HOME/.vim/*
-COPY $CFG_DIR/.vim $HOME/.vim
-RUN git clone https://github.com/VundleVim/Vundle.vim.git $HOME/.vim/bundle/Vundle.vim
-RUN vim +PluginInstall +qall
-RUN cd $HOME/.vim/bundle/YouCompleteMe && python3 install.py
-RUN cd $HOME/.vim/bundle/YouCompleteMe && python3 install.py
+COPY $cfg_dir/.vim  $HOME/.vim
+COPY $cfg_dir/.vim/colors $HOME/.vim/colors
+RUN git clone --recurse-submodules https://github.com/VundleVim/Vundle.vim.git $HOME/.vim/bundle/Vundle.vim
+
+# Do this manually upon logging into the docker container
+#RUN vim +PluginInstall +qall
+#RUN cd $HOME/.vim/bundle/YouCompleteMe && python3 install.py
+#RUN cd $HOME/.vim/bundle/YouCompleteMe && python3 install.py
 
 # (Optional) Configure tmux
-COPY $CFG_DIR/.tmux.conf $HOME/.tmux.conf
+COPY $cfg_dir/.tmux.conf $HOME/.tmux.conf
 
 # Default repository after logging in
 WORKDIR $HOME

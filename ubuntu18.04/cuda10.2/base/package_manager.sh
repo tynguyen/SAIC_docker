@@ -8,10 +8,10 @@ ls $PKG_LIST_DIR
 # Install essential development packages
 $PKG_LIST_DIR/install_essential_packages.sh 
 
-# Install python3.7
+# Install python3.7 & its packages
 $PKG_LIST_DIR/install_python3.7.sh
 #$PKG_LIST_DIR/install_python3.7_from_source.sh
 
-# Install python3.6
-#$PKG_LIST_DIR/install_python3.6.sh
+# Install python3.6 packages
+$PKG_LIST_DIR/install_python3.6.sh
 

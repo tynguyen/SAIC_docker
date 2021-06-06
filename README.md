@@ -31,7 +31,7 @@ Based on nvidia/cuda:10.2-devel-ubuntu18.04
 - [x] ubuntu18.04
 - [x] cuda10.2
 - [x] cudnn8 
-- [x] python3.7
+- [x] python3.6.9
 - [x] cmake 3.20.3 
 - [x] vim 8.2 
 - [x] Opencv3 python3.7 via pip :-( 
