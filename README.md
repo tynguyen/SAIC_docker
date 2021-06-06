@@ -1,6 +1,14 @@
-# Docker
-My repo for docker management
-tynguyen@seas.upenn.edu 
+# EZ-Docker
+@Brief: My repo for docker management. 
+My goal is to create a clean, usablle docker management system that can bring seamless experience to Ubuntu users. 
+I focus on the following points, 
+* Reusablity: users can update ubuntu versions, CUDA versions, cudnn versions, and other packages versions. Only need to create an installation script once for each package which can be used to install on different docker images. 
+* Versality: switching between different docker image is easy
+* User-friendliness: users should be able to execute common tasks such as create a container, log into a container, 
+delete a container, access shared data with the host machine WITHOUT learning docker commands. 
+* Ease to manage: developers should find it easy to keep track of software packages that are already installed in each docker image
+
+@Maintainer: tynguyen@seas.upenn.edu 
 
 # Updates
 - [ ] [updated June 1st 2021] more flexible on cudnn version and cuda version. New build_img.sh script enables to select cuda version as well as cudnn version. 
