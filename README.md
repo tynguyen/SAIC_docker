@@ -35,9 +35,13 @@ Dockerfiles are organized in an hierarchical way as followings:
         * Dockerfile
         * package_manager.sh : lists all (optional) package installation scripts for this image, obtained from installation_scrpts
 
-To build your own docker image with new packages, all you need is to create installation files, put them into the `installation_scripts` folder, add one line to the package_manager.sh and run
+To build your own docker image with new packages, all you need is to create installation files, put them into the `installation_scripts` folder, add one line to the package_manager.sh file, for example 
 ```
-bash build_img.sh ubuntu<version>/cuda<version>/dev/Dockerfile
+echo "$PKG_DIR_LIST/install_opencv4_python3.6_from_source.sh >> my_docker>/package_manager.sh"
+```
+and run
+```
+bash build_img.sh my_docker>/Dockerfile
 ```
 
 ## Base image: tynguyen/ubuntu1804:base-cuda10.2-cudnn8
