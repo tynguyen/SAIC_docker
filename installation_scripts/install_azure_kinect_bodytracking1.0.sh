@@ -1,4 +1,18 @@
 echo "----------> Start building azure-kinect-body tracking--------"
+curl -sSL https://packages.microsoft.com/keys/microsoft.asc | sudo apt-key add -
+apt-add-repository https://packages.microsoft.com/ubuntu/18.04/prod
+apt-get update
+curl -sSL https://packages.microsoft.com/ubuntu/18.04/prod/pool/main/libk/libk4abt1.0/libk4abt1.0_1.0.0_amd64.deb > /libk4abt1.0_1.0.0_amd64.deb
+curl -sSL https://packages.microsoft.com/ubuntu/18.04/prod/pool/main/libk/libk4abt1.0-dev/libk4abt1.0-dev_1.0.0_amd64.deb > /libk4abt1.0-dev_1.0.0_amd64.deb
+
+echo 'libk4a1.3 libk4a1.3/accepted-eula-hash string 0f5d5c5de396e4fee4c0753a21fee0c1ed726cf0316204edda484f08cb266d76' | debconf-set-selections
+echo 'libk4abt1.0   libk4abt1.0/accepted-eula-hash  string  03a13b63730639eeb6626d24fd45cf25131ee8e8e0df3f1b63f552269b176e38' | debconf-set-selections
+dpkg -i /libk4abt1.0_1.0.0_amd64.deb
+dpkg -i /libk4abt1.0-dev_1.0.0_amd64.deb
+rm /libk4abt1.0-dev_1.0.0_amd64.deb
+rm /libk4abt1.0_1.0.0_amd64.deb
+
+
 wget https://packages.microsoft.com/ubuntu/18.04/prod/pool/main/libk/libk4abt1.0-dev/libk4abt1.0-dev_1.0.0_amd64.deb
 wget https://packages.microsoft.com/ubuntu/18.04/prod/pool/main/libk/libk4abt1.0/libk4abt1.0_1.0.0_amd64.deb
 mkdir -p /install
@@ -47,3 +61,11 @@ cd /home/Azure-Kinect-Samples &&\
    ninja
 
 cp -r /install/libk4abt1.0/usr/bin/dnn_model_2_0.onnx  /usr/bin/
+
+# Need to install the debian package for running
+#apt update -y
+# installing from the debian package requires some sort of EULA answering. To make it work out, here is the hack.
+#echo 'libk4abt1.0 libk4abt1.0/accepted-eula-hash  string  03a13b63730639eeb6626d24fd45cf25131ee8e8e0df3f1b63f552269b176e38' | debconf-set-selections
+#apt install -y libk4abt1.0
+#echo 'libk4abt1.0-dev  libk4abt1.0-dev/accepted-eula-hash  string  03a13b63730639eeb6626d24fd45cf25131ee8e8e0df3f1b63f552269b176e38' | debconf-set-selections
+#apt install -y libk4abt1.0-dev

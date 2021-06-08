@@ -24,17 +24,23 @@ Dockerfiles are organized in an hierarchical way as followings:
     * cuda<version> : contain all Dockerfiles for a specific CUDA version
         * base : contain the Dockerfiles for the base image
             * Dockerfile
-            * package_manager.sh : lists all (optional) package installation scripts for this image, obtained from installatio_scrpts
-        * dev : contain the Dockerfile the dev image which is built upon on the base image 
+            * package_manager.sh : lists all (optional) package installation scripts for this image, obtained from installation_scrpts
+        * dev : contain the Dockerfile for the dev image which is built upon on the base image 
             * Dockerfile
-            * package_manager.sh : lists all (optional) package installation scripts for this image, obtained from installatio_scrpts
+            * package_manager.sh : lists all (optional) package installation scripts for this image, obtained from installation_scrpts
+        * kinect : contain the Dockerfile for the kinec image which is built upon on the dev image 
+            * Dockerfile
+            * package_manager.sh : lists all (optional) package installation scripts for this image, obtained from installation_scrpts
+    * my_docker : contain the Dockerfile for YOUR OWN image which is gonna built upon on the base image of your choice (my_docker_env.sh)
+        * Dockerfile
+        * package_manager.sh : lists all (optional) package installation scripts for this image, obtained from installation_scrpts
 
 To build your own docker image with new packages, all you need is to create installation files, put them into the `installation_scripts` folder, add one line to the package_manager.sh and run
 ```
 bash build_img.sh ubuntu<version>/cuda<version>/dev/Dockerfile
 ```
 
-## Base image: saic/ubuntu1804:cuda12.0
+## Base image: tynguyen/ubuntu1804:base-cuda10.2-cudnn8
 Based on nvidia/cuda:10.2-devel-ubuntu18.04
 - [x] ubuntu18.04
 - [x] cuda10.2
@@ -42,35 +48,86 @@ Based on nvidia/cuda:10.2-devel-ubuntu18.04
 - [x] python3.6.9
 - [x] cmake 3.20.3 
 - [x] vim 8.2 
-- [x] Opencv3 python3.7 via pip :-( 
-- [x] YouCompleteMe for VIM. Not work yet! 
+- [x] Opencv4 python3.6 via pip
+- [x] YouCompleteMe for VIM.  
 
-(Optional) In order to build the base image, you need to install some prerequisites packages on the host machine. 
+## Dev image: tynguyen/ubuntu1804:dev-cuda10.2-cudnn8
+Based on tynguyen/ubuntu1804:base-cuda10.2-cudnn8
+Adding
+- [x] Opencv4 python3.6 from source
+
+## Kinect image: tynguyen/ubuntu1804:kinect-cuda10.2-cudnn8
+Based on tynguyen/ubuntu1804:dev-cuda10.2-cudnn8
+Adding
+- [x] NVIDIA-docker
+- [x] Azure Kinect SDK v1.3 
+- [x] Azure Kinect body tracking v1.0
+- [x] CMake 16.5 
+- [x] Audio enabled 
+
+Note 1: the ubuntu18.04/cuda10.2/kinect/Dockerfile is still not able to install the Azure Kinect body tracking yet. 
+I manually install this package using the following commands inside the docker: 
+```
+sudo apt get update
+sudo apt get install libk4abt1.0-dev
+sudo bash installation_scripts/install_azure_kinect_body_tracking1.0.sh
+```
+
+Note 2: in order to enable sound inside the docker container, the following packages have been installed inside the docker
+```
+apt install alsa-base pulseaudio 
+```
+And add a couple of arguments into docker run. Refer to `create_container.sh` for more details. 
+[Reference 1](https://developpaper.com/question/how-to-make-alsa-play-available-in-docker/)
+
+[Reference 2](https://github.com/TheBiggerGuy/docker-pulseaudio-example)
+
+## Your image: tynguyen/ubuntu1804:<your user name>-<base image tag> 
+The `Dockerfile` for YOUR IMAGE is given in `my_docker/Dockerfile`. This image should be built based on a base image given by 
+variables $BASE_IMG_NAME:$BASE_IMG_TAG that you declare in `my_docker_env.sh`.
+If you want to preinstall any package into this docker image, please refer to the Advance section in this README.
+
+# Installation
+1. First, install [Docker](https://docs.docker.com/get-started/)
+
+2. Install NVIDIA-docker and some other necessary packages 
 ```
 bash host_prerequisites_installation.sh
 ```
 
-# Installation
-First, download the repo
+3. Download the repo
 ```
 git clone --recursive-submodules https://github.com/tynguyen/SAIC_docker.git
 cd SAIC_docker
 ```
 
-Set the docker image and the name of the container by modifying, for example:
+4. Set the docker image and the name of the container by modifying, for example:
 ```
 DOCKER_IMG_NAME="tynguyen_base_ubuntu1804_cuda10.0_docker:latest"
 CONTAINER_NAME="tynguyen_base"
 ```
 in my_docker_env.sh 
 
+If nothing is changed, you will use the pre-built tynguyen/ubuntu1804:kinect-cuda10.2-cudnn8 docker image. 
 Then, run this shell script
 ```
 source my_docker_env.sh
 ```
+
 Note: you need to run this my_docker_env.sh everytime you open a new terminal. To avoid this step, one way is to copy this file to $HOME/Env/my_docker_env.sh and in the $HOME/.bashrc file, add the following line
 ```
 source ~/Env/my_docker_env.sh
+```
+
+5. Built your own docker image using the given based image.
+By default, this step is basically creating a clone of the base image with an user $whoami (your user name on the host machine). 
+```
+bash build_img.sh my_docker/Dockerfile
+```
+
+Now you've already had a docker image under your name. Check if it's already there
+```
+docker images
 ```
 
 # Usage 
@@ -97,6 +154,8 @@ bash create_container.sh -i saic/ubuntu18.04:base-cuda10.2-cudnn8 -v ~/github_ws
 
 ```
 In this example, the created container will share two folders: ~/github_ws and ~/bags with the host machine. 
+
+If you do not provide -i, -n -u arguments, it will use default values given from `my_docker_env.sh`
 
 # Use a container
 Once a container is created, the following scripts are used to easily manage the container.

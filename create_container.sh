@@ -121,7 +121,13 @@ if [ $? -ne 0 ]; then
     -e "LIBGL_ALWAYS_SOFTWARE=1" \
     -v /etc/group:/etc/group:ro \
     -v /etc/passwd:/etc/passwd:ro \
-    -v "/etc/localtime:/etc/localtime:ro" \
+    --group-add $(getent group audio | cut -d: -f3) \ # audio
+    -e PULSE_SERVER=unix:${XDG_RUNTIME_DIR}/pulse/native \ # audio
+    -v ${XDG_RUNTIME_DIR}/pulse/native:${XDG_RUNTIME_DIR}/pulse/native \ # audio
+    -v ~/.config/pulse/cookie:/root/.config/pulse/cookie \ # audio
+    -v "/etc/localtime:/etc/localtime:ro" \ # Time sync
+    -v "/etc/timezone:/etc/timezone:ro" \ # Time sync
+    --device /dev/snd \ # sound
     -v "/dev/input:/dev/input" \
     --privileged \
     --security-opt seccomp=unconfined \
@@ -141,7 +147,13 @@ else
     -e "LIBGL_ALWAYS_SOFTWARE=1" \
     -v /etc/group:/etc/group:ro \
     -v /etc/passwd:/etc/passwd:ro \
+    --group-add $(getent group audio | cut -d: -f3) \ # audio
+    -e PULSE_SERVER=unix:${XDG_RUNTIME_DIR}/pulse/native \ # audio
+    -v ${XDG_RUNTIME_DIR}/pulse/native:${XDG_RUNTIME_DIR}/pulse/native \ # audio
+    -v ~/.config/pulse/cookie:/root/.config/pulse/cookie \ # audio
     -v "/etc/localtime:/etc/localtime:ro" \
+    -v "/etc/timezone:/etc/timezone:ro" \
+    --device /dev/snd \
     -v "/dev/input:/dev/input" \
     --privileged \
     --runtime nvidia\

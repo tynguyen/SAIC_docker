@@ -6,14 +6,14 @@
 #                       SCRIPT OPTIONS                                 |
 # ---------------------------------------------------------------------|
 OPENCV_VERSION='4.2.0'       # Version to be installed
-OPENCV_CONTRIB='NO'          # Install OpenCV's extra modules (YES/NO)
-PYTHON_BIN='/usr/bin/python3.7'
-PYTHON_LIB='/usr/lib/python3.7'
-PYTHON_INCLUDE='/usr/include/python3.7'
-PYTHON_PKG_PATH='/usr/local/lib/python3.7/dist-packages/'
-PYTHON_NUMPY_INCLUDE='/usr/local/lib/python3.7/dist-packages/numpy/core/include'
-# Make sure python3.7 is default (instead of  python3.6)
-#update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.7 1
+OPENCV_CONTRIB='YES'          # Install OpenCV's extra modules (YES/NO)
+PYTHON_BIN='/usr/bin/python3.6'
+PYTHON_LIB='/usr/lib/python3.6'
+PYTHON_INCLUDE='/usr/include/python3.6'
+PYTHON_PKG_PATH='/usr/local/lib/python3.6/dist-packages/'
+PYTHON_NUMPY_INCLUDE='/usr/local/lib/python3.6/dist-packages/numpy/core/include'
+# Make sure python3.6 is default (instead of  python3.6)
+#update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.6 1
 # -------------------------------------------------------------------- |
 
 # |          THIS SCRIPT IS TESTED CORRECTLY ON          |
