@@ -13,3 +13,5 @@ $PKG_LIST_DIR/install_azure_kinect_SDK1.3.sh
 # Install Azure kinect body tracking 1.0
 $PKG_LIST_DIR/install_azure_kinect_bodytracking1.0.sh
 
+# Install packages to enable audio on the docker
+$PKG_LIST_DIR/install_audio.sh

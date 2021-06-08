@@ -1,10 +1,11 @@
 #!/usr/bin/env bash
 
-# Runs a docker container with the image created by build.bash
+# Runs a docker container with the image created by build_img.sh
 # Requires:
 #   docker
-#   nvidia-docker
-#   an X server
+#   nvidia-docker (optional)
+#   an X server (optional)
+# Based on your setting, you can remove arguments listed belows.
 
 HELP()
 {
@@ -78,89 +79,64 @@ fi
 #VIMRC=$HOME/.vim
 #DOCKER_OPTS="$DOCKER_OPTS -v $VIMRC:/home/$DOCKER_USER/.vim:rw"
 
-
-## Share your bash file
-#BASH_FILE=$HOME/.bashrc
-#if [ -f $BASH_FILE ]
-#then
-#  DOCKER_OPTS="$DOCKER_OPTS -v $BASH_FILE:/home/$DOCKER_USER/.bashrc:rw"
-#fi
-
-
-# Share the github workspace 
-#GITHUB_WS=$HOME/github_ws
-#DOCKER_OPTS="$DOCKER_OPTS -v $GITHUB_WS:/home/$DOCKER_USER/github_ws:rw"
-
-
-echo ">> List of options given: $DOCKER_OPTS"
-
 # Mount extra volumes if needed.
 # E.g.:
 # -v "/opt/sublime_text:/opt/sublime_text" \
 
 #--rm will remove the container after exitting
 
+# Arguments to enable audio on the container
+DOCKER_OPTS="$DOCKER_OPTS  --group-add $(getent group audio | cut -d: -f3)"
+DOCKER_OPTS="$DOCKER_OPTS  -e PULSE_SERVER=unix:${XDG_RUNTIME_DIR}/pulse/native"
+DOCKER_OPTS="$DOCKER_OPTS  -v ${XDG_RUNTIME_DIR}/pulse/native:${XDG_RUNTIME_DIR}/pulse/native"
+DOCKER_OPTS="$DOCKER_OPTS  -v $HOME/.config/pulse/cookie:/root/.config/pulse/cookie"
+DOCKER_OPTS="$DOCKER_OPTS  --device /dev/snd"
+
+# Arguments to enable time sync between the docker container and the host machine
+DOCKER_OPTS="$DOCKER_OPTS  -v /etc/localtime:/etc/localtime:ro" 
+DOCKER_OPTS="$DOCKER_OPTS  -v /etc/timezone:/etc/timezone:ro"
+  
+
+# Arguments to enable visualization windows from the container pop up on the host machine
+DOCKER_OPTS="$DOCKER_OPTS  -e DISPLAY=$DISPLAY"
+DOCKER_OPTS="$DOCKER_OPTS  -e QT_X11_NO_MITSHM=1"
+DOCKER_OPTS="$DOCKER_OPTS  -e XAUTHORITY=$XAUTH"
+DOCKER_OPTS="$DOCKER_OPTS  -v $XAUTH:$XAUTH"
+DOCKER_OPTS="$DOCKER_OPTS  -v /tmp/.X11-unix:/tmp/.X11-unix" 
+DOCKER_OPTS="$DOCKER_OPTS  -e LIBGL_ALWAYS_INDIRECT=" 
+DOCKER_OPTS="$DOCKER_OPTS  -e LIBGL_ALWAYS_SOFTWARE=1"
+
+
+# Arguments to run GPU within the container
+nvidia-docker &> /dev/null
+if [ $? -ne 0 ]; then
+  echo "[Warning] nvidia-docker has NOT been installed on the host machine -> NOT able to use GPUs on the container"
+else
+  DOCKER_OPTS="$DOCKER_OPTS  --runtime nvidia"
+  echo "[Info] nvidia-docker has been installed on the host machine -> able to use GPUs on the container"
+fi
+
+echo "[Info] List of arguments given: $DOCKER_OPTS"
+
+
 # In order to enable NVIDIA-driver use within a container, you need either
 # - use nvidia-docker (install nvidia-docker-tool)
 # - Or put a flag '--runtime nvidia' after 'docker run'
-
 echo "----------------------------------"
-echo ">> Creating container ${CONTAINER_NAME} from docker $IMG ...."
+echo "[Info] Creating container ${CONTAINER_NAME} from docker $IMG ...."
 xhost +
-nvidia-docker &> /dev/null
-if [ $? -ne 0 ]; then
-  docker run -it --gpus all\
-    --name=$CONTAINER_NAME \
-    -p $PORT_OPTS \
-    -e DISPLAY=$DISPLAY \
-    -e QT_X11_NO_MITSHM=1 \
-    -e XAUTHORITY=$XAUTH \
-    -v "$XAUTH:$XAUTH" \
-    -v "/tmp/.X11-unix:/tmp/.X11-unix" \
-    -e "LIBGL_ALWAYS_INDIRECT=" \
-    -e "LIBGL_ALWAYS_SOFTWARE=1" \
-    -v /etc/group:/etc/group:ro \
-    -v /etc/passwd:/etc/passwd:ro \
-    --group-add $(getent group audio | cut -d: -f3) \ # audio
-    -e PULSE_SERVER=unix:${XDG_RUNTIME_DIR}/pulse/native \ # audio
-    -v ${XDG_RUNTIME_DIR}/pulse/native:${XDG_RUNTIME_DIR}/pulse/native \ # audio
-    -v ~/.config/pulse/cookie:/root/.config/pulse/cookie \ # audio
-    -v "/etc/localtime:/etc/localtime:ro" \ # Time sync
-    -v "/etc/timezone:/etc/timezone:ro" \ # Time sync
-    --device /dev/snd \ # sound
-    -v "/dev/input:/dev/input" \
-    --privileged \
-    --security-opt seccomp=unconfined \
-    $DOCKER_OPTS \
-    $IMG	\
-    bash
-else
-  docker run -it --gpus all\
-    --name=$CONTAINER_NAME \
-    -p $PORT_OPTS \
-    -e DISPLAY=$DISPLAY \
-    -e QT_X11_NO_MITSHM=1 \
-    -e XAUTHORITY=$XAUTH \
-    -v "$XAUTH:$XAUTH" \
-    -v "/tmp/.X11-unix:/tmp/.X11-unix" \
-    -e "LIBGL_ALWAYS_INDIRECT=" \
-    -e "LIBGL_ALWAYS_SOFTWARE=1" \
-    -v /etc/group:/etc/group:ro \
-    -v /etc/passwd:/etc/passwd:ro \
-    --group-add $(getent group audio | cut -d: -f3) \ # audio
-    -e PULSE_SERVER=unix:${XDG_RUNTIME_DIR}/pulse/native \ # audio
-    -v ${XDG_RUNTIME_DIR}/pulse/native:${XDG_RUNTIME_DIR}/pulse/native \ # audio
-    -v ~/.config/pulse/cookie:/root/.config/pulse/cookie \ # audio
-    -v "/etc/localtime:/etc/localtime:ro" \
-    -v "/etc/timezone:/etc/timezone:ro" \
-    --device /dev/snd \
-    -v "/dev/input:/dev/input" \
-    --privileged \
-    --runtime nvidia\
-    --security-opt seccomp=unconfined \
-    $DOCKER_OPTS \
-    $IMG	\
-    bash
-fi
+docker run -it --gpus all\
+  --name=$CONTAINER_NAME \
+  -p $PORT_OPTS \
+  -v /etc/group:/etc/group:ro \
+  -v /etc/passwd:/etc/passwd:ro \
+  -v "/dev/input:/dev/input" \
+  --privileged \
+  --security-opt seccomp=unconfined \
+  $DOCKER_OPTS \
+  $IMG	\
+  bash
+
+
 echo "----------------------------------"
 
