@@ -64,9 +64,9 @@ git clone --recurse-submodules https://github.com/microsoft/Azure-Kinect-Sensor-
 cd $INSTALL_DIR/Azure-Kinect-Sensor-SDK &&\
     git branch -a
 mkdir -p ${INSTALL_DIR}/Azure-Kinect-Sensor-SDK/build/bin/
-cp /microsoft.azure.kinect.sensor.1.4.1/linux/lib/native/x64/release/libdepthengine.so.2.0 ${INSTALL_DIR}/Azure-Kinect-Sensor-SDK/build/bin/libdepthengine.so.2.0
-cp /microsoft.azure.kinect.sensor.1.4.1/linux/lib/native/x64/release/libdepthengine.so.2.0 /lib/x86_64-linux-gnu/
-cp /microsoft.azure.kinect.sensor.1.4.1/linux/lib/native/x64/release/libdepthengine.so.2.0 /usr/lib/x86_64-linux-gnu/
+cp ${INSTALL_DIR}/microsoft.azure.kinect.sensor.1.4.1/linux/lib/native/x64/release/libdepthengine.so.2.0 ${INSTALL_DIR}/Azure-Kinect-Sensor-SDK/build/bin/libdepthengine.so.2.0
+cp ${INSTALL_DIR}/microsoft.azure.kinect.sensor.1.4.1/linux/lib/native/x64/release/libdepthengine.so.2.0 /lib/x86_64-linux-gnu/
+cp ${INSTALL_DIR}/microsoft.azure.kinect.sensor.1.4.1/linux/lib/native/x64/release/libdepthengine.so.2.0 /usr/lib/x86_64-linux-gnu/
 chmod a+rwx /usr/lib/x86_64-linux-gnu
 chmod a+rwx -R /lib/x86_64-linux-gnu/
 chmod a+rwx -R ${INSTALL_DIR}/Azure-Kinect-Sensor-SDK/build/bin/
