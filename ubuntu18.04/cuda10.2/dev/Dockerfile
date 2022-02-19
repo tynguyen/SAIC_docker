@@ -1,5 +1,5 @@
 # For the following ARG variables, an default value is given to use if not set through --build_arg  i.e. docker build --build_arg base_docker_img_name=nvidia/cuda ....
-ARG base_docker_img_name="tynguyen/saicny_ubuntu18.04" 
+ARG base_docker_img_name="tynguyen/saicny_ubuntu18.04"
 ARG base_docker_img_tag="base-cuda10.2-cudnn8"
 
 FROM ${base_docker_img_name}:${base_docker_img_tag}
@@ -15,9 +15,9 @@ RUN apt-get update
 ARG user_name=saicny
 ARG user_id=1000
 ARG g_id=100
-RUN echo "----------------------creating an user $user_name" 
+RUN echo "----------------------creating an user $user_name"
 
-# To find user id on your host machine, use: $id -u  and $id -g 
+# To find user id on your host machine, use: $id -u  and $id -g
 RUN apt-get install sudo
 RUN export uid=$user_id gid=$g_id && \
     mkdir -p /home/$user_name && \
@@ -40,10 +40,10 @@ ENV PKG_MANGER_FILE="/package_manager.sh"
 RUN echo "PKG_MANAGER_DIR: $PKG_MANAGER_FILE"
 RUN echo "PKG_LIST_DIR: $PKG_LIST_DIR"
 COPY $pkg_list_dir $PKG_LIST_DIR
-RUN chmod +x $PKG_LIST_DIR/* 
-COPY $pkg_manager_file $PKG_MANGER_FILE 
-RUN chmod +x $PKG_MANGER_FILE 
-RUN $PKG_MANGER_FILE 
+RUN chmod +x $PKG_LIST_DIR/*
+COPY $pkg_manager_file $PKG_MANGER_FILE
+RUN chmod +x $PKG_MANGER_FILE
+RUN $PKG_MANGER_FILE
 RUN rm $PKG_MANGER_FILE
 RUN rm -rf $PKG_LIST_DIR
 
@@ -53,7 +53,7 @@ ENV NVIDIA_DRIVER_CAPABILITIES ${NVIDIA_DRIVER_CAPABILITIES:+$NVIDIA_DRIVER_CAPA
 
 
 #----------------------------------------------#
-# Switch to your user name. Not be abl to install any that requires SUDO 
+# Switch to your user name. Not be abl to install any that requires SUDO
 USER $user_name
 ENV HOME=/home/$user_name
 

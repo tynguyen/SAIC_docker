@@ -1,14 +1,16 @@
-# Copyright 2020
+# Copyright 2022
 # Ty Nguyen
 # tynguyen.tech@gmail.com
 # #==========================================================================
 # For the following ARG variables, an default value is given to use if not set through --build_arg  i.e. docker build --build_arg base_docker_img_name=nvidia/cuda ....
 
-ARG base_docker_img_name="nvidia/cuda"
-ARG base_docker_img_tag="10.2-devel-ubuntu18.04"
+# For some unknown reasons, the following commands do not always work:
+# ARG base_docker_img_name="nvidia/cuda"
+# ARG base_docker_img_tag="11.1.1-cudnn8-devel-ubuntu18.04"
+# FROM ${base_docker_img_name}:${base_docker_img_tag}
 
-FROM ${base_docker_img_name}:${base_docker_img_tag}
-#FROM nvidia/cuda:10.2-devel-ubuntu18.04
+# If they do not work, use the following command instead
+FROM nvidia/cuda:11.1.1-cudnn8-devel-ubuntu18.04
 
 RUN apt-get update
 RUN DEBIAN_FRONTEND="noninteractive" apt-get -y install tzdata
@@ -35,7 +37,7 @@ RUN chmod +x $PKG_MANGER_FILE
 RUN $PKG_LIST_DIR/install_timezone.sh
 
 # Add username and add to sudoers group. saicny will be one default user
-ARG USER_NAME=saicny > Note: do not use ENV because it will be kept to next layers
+ARG USER_NAME=developer > Note: do not use ENV because it will be kept to next layers
 ARG USER_ID=0
 ARG G_ID=0
 
@@ -49,20 +51,20 @@ RUN export uid=$USER_ID gid=$G_ID && \
     chmod 0440 /etc/sudoers.d/$USER_NAME && \
     chown ${uid}:${gid} -R /home/$USER_NAME
 
-# Install cudnn
+# Install cudnn if the base image has not had cudnn installed yet.
 # NOTE: in order to make the following ENV works, the following lines must be given after FROM ...
-ENV CUDA_VERSION="cuda10.2"
-ENV CUDNN_VERSION="8.2.0.53"
+# ENV CUDA_VERSION="cuda11.1.1"
+# ENV CUDNN_VERSION="8.2.1"
 
-LABEL com.nvidia.cudnn.version="${CUDNN_VERSION}"
+# LABEL com.nvidia.cudnn.version="${CUDNN_VERSION}"
 
-#TODO: change this cuda10.2 according to the CUDA version that you want to use
-RUN echo "Cuda version: $CUDA_VERSION"
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    libcudnn8=$CUDNN_VERSION-1+$CUDA_VERSION \
-    libcudnn8-dev=$CUDNN_VERSION-1+$CUDA_VERSION \
-    && apt-mark hold libcudnn8 && \
-    rm -rf /var/lib/apt/lists/*
+# #TODO: change this cuda10.2 according to the CUDA version that you want to use
+# RUN echo "Cuda version: $CUDA_VERSION"
+# RUN apt-get update && apt-get install -y --no-install-recommends \
+#     libcudnn8=$CUDNN_VERSION-1+$CUDA_VERSION \
+#     libcudnn8-dev=$CUDNN_VERSION-1+$CUDA_VERSION \
+#     && apt-mark hold libcudnn8 && \
+#     rm -rf /var/lib/apt/lists/*
 
 
 # Install ubuntu essential dependencies

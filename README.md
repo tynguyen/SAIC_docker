@@ -50,8 +50,14 @@ and run
 ```
 bash build_img.sh my_docker>/Dockerfile
 ```
+*Note: you might need to log in to the docker hub using comand lines if you've not done that on your computer.
+```
+docker login
+```
 
-## Base image: tynguyen/ubuntu1804:base-cuda10.2-cudnn8
+# Available Images
+## Cuda10.2
+### Base image: tynguyen/ubuntu1804:base-cuda10.2-cudnn8
 Based on nvidia/cuda:10.2-devel-ubuntu18.04
 - [x] ubuntu18.04
 - [x] cuda10.2
@@ -62,12 +68,12 @@ Based on nvidia/cuda:10.2-devel-ubuntu18.04
 - [x] Opencv4 python3.6 via pip
 - [x] YouCompleteMe for VIM.
 
-## Dev image: tynguyen/ubuntu1804:dev-cuda10.2-cudnn8
+### Dev image: tynguyen/ubuntu1804:dev-cuda10.2-cudnn8
 Based on tynguyen/ubuntu1804:base-cuda10.2-cudnn8
 Adding
 - [x] Opencv4 python3.6 from source
 
-## Kinect image: tynguyen/ubuntu1804:kinect-cuda10.2-cudnn8
+### Kinect image: tynguyen/ubuntu1804:kinect-cuda10.2-cudnn8
 Based on tynguyen/ubuntu1804:dev-cuda10.2-cudnn8
 Adding
 - [x] NVIDIA-docker
@@ -76,7 +82,7 @@ Adding
 - [x] CMake 16.5
 - [x] Audio enabled
 
-## ROS Mellodic image: tynguyen/ubuntu1804:ros-melodic-cuda10.2-cudnn8
+### ROS Mellodic image: tynguyen/ubuntu1804:ros-melodic-cuda10.2-cudnn8
 Based on tynguyen/ubuntu1804:dev-cuda10.2-cudnn8
 Adding
 - [x] NVIDIA-docker
@@ -101,8 +107,29 @@ And add a couple of arguments into docker run. Refer to `create_container.sh` fo
 
 [Reference 2](https://github.com/TheBiggerGuy/docker-pulseaudio-example)
 
-## Your image: tynguyen/ubuntu1804:<your user name>-<base image tag>
-The `Dockerfile` for YOUR IMAGE is given in `my_docker/Dockerfile`. This image should be built based on a base image given by
+## Cuda11.1
+### Base image: tynguyen/ubuntu1804:base-cuda11.1-cudnn8
+Based on nvidia/cuda:10.2-devel-ubuntu18.04
+- [x] ubuntu18.04
+- [x] cuda11.1
+- [x] cudnn8
+- [x] python3.6.9
+- [x] cmake 3.20.3
+- [x] vim 8.2
+- [x] Opencv4 python3.6 via pip
+- [x] YouCompleteMe for VIM.
+
+# Create Your Own Image
+Based on the existing images, you're supposed to create an image that fits your need before creating a container using a name given by the following syntax
+```
+tynguyen/ubuntu1804:<your user name>-<base image tag>
+```
+Why should you do this? This is because the existing images were created as one-to-fit-all so they might miss essential packages and customizations.
+To create your own images, you also need a `Dockerfile` in order to run
+```
+bash build_img.sh <path to your Dockerfile>
+```
+Indeed, the `Dockerfile` for YOUR IMAGE is given in `my_docker/Dockerfile`. This image should be built based on a base image given by
 variables $BASE_IMG_NAME:$BASE_IMG_TAG that you declare in `my_docker_env.sh`.
 If you want to preinstall any package into this docker image, please refer to the Advance section in this README.
 

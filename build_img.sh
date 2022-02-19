@@ -1,4 +1,4 @@
-!/usr/bin/env bash
+#!/usr/bin/bash
 ```
 #  Usage: bash build_img.sh <folder_to_the_Docker_file> <name> <tag>
 
@@ -16,9 +16,9 @@ g_id=$user_id
 
 if [ $# -eq 0 ]
 then
-    echo "Usage: $0 directory-name docker-image-name docker-tag-name" 
-    echo "Or: $0 directory-name docker-image-name" 
-    echo "Or: $0 directory-name" 
+    echo "Usage: $0 directory-name docker-image-name docker-tag-name"
+    echo "Or: $0 directory-name docker-image-name"
+    echo "Or: $0 directory-name"
     exit 1
 fi
 
@@ -48,7 +48,7 @@ else
     echo "The default docker name given in DOCKER_IMG_NAME is (empty) ${DOCKER_IMG_NAME}! Existing..."
     exit 1
   fi
-fi  
+fi
 
 
 if [ -n "$3" ]
@@ -62,9 +62,9 @@ else
     tag_name=${DOCKER_IMG_TAG}
     echo "Use the default docker tag given in DOCKER_IMG_TAG: ${tag_name}"
   else
-    echo "The default docker tag given in DOCKER_IMG_TAG is empty! Use latest as default and continuing ..." 
+    echo "The default docker tag given in DOCKER_IMG_TAG is empty! Use latest as default and continuing ..."
   fi
-fi  
+fi
 
 
 echo "Root dir: $DIR"
@@ -80,21 +80,21 @@ echo "------------------------------"
 
 # There is an option to use a specific base image.
 if [ -n "${BASE_DOCKER_IMG_NAME}" ]
-then 
+then
   if [ -n "${BASE_DOCKER_IMG_TAG}" ]
     then
     echo "Building a Docker using the base image: ${BASE_DOCKER_IMG_NAME}:${BASE_DOCKER_IMG_TAG}"
-  else 
+  else
     echo "Base tag is not given, use latest as the tag. Base image: ${BASE_DOCKER_IMG_NAME}:latest"
     BASE_DOCKER_IMG_TAG="latest"
-  fi 
-  else 
+  fi
+  else
     echo "Base image name is not given! Use the default one given in the Dockerfile"
 
-fi 
+fi
 
 if [ -n "${BASE_DOCKER_IMG_NAME}" ]
-then 
+then
   docker build --rm=true -t $image_plus_tag --build-arg user_id=$user_id \
 	       --build-arg user_name=$user_name	\
 	       --build-arg g_id=$g_id \
@@ -106,7 +106,7 @@ then
 	       --build-arg cfg_dir=cfg_scripts\
 	       --build-arg pkg_manager_file=${1%/Dockerfile}/package_manager.sh\
 	       -f $DIR/$1 .
-else 
+else
   docker build --rm=true -t $image_plus_tag --build-arg user_id=$user_id \
 	       --build-arg user_name=$user_name	\
 	       --build-arg g_id=$g_id \
@@ -116,7 +116,7 @@ else
 	       --build-arg cfg_dir=cfg_scripts\
 	       --build-arg pkg_manager_file=${1%/Dockerfile}/package_manager.sh\
 	       -f $DIR/$1 .
-	      
+
 fi
 #docker tag $image_plus_tag $image_name:latest
 
