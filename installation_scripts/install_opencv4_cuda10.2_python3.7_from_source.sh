@@ -1,17 +1,22 @@
 ######################################
 # INSTALL OPENCV ON UBUNTU OR DEBIAN #
+# Work with cuda 10.2
 ######################################
 
 # -------------------------------------------------------------------- |
 #                       SCRIPT OPTIONS                                 |
 # ---------------------------------------------------------------------|
-OPENCV_VERSION='4.2.0'       # Version to be installed
-OPENCV_CONTRIB='NO'          # Install OpenCV's extra modules (YES/NO)
-PYTHON_BIN='/usr/local/bin/python3.7'
-PYTHON_LIB='/usr/local/lib/python3.7'
-PYTHON_INCLUDE='/usr/local/include/python3.7'
-PYTHON_PKG_PATH='/usr/local/lib/python3.7/dist-packages/'
-PYTHON_NUMPY_INCLUDE='/usr/local/lib/python3.7/dist-packages/numpy/core/include'
+OPENCV_VERSION='4.2.0.34'       # Version to be installed
+OPENCV_CONTRIB='YES'          # Install OpenCV's extra modules (YES/NO)
+PYTHON_VERSION='python3.7'
+# Get Python paths based on the Python version and where it is installed on the docker image
+PYTHON_BIN=$(which $PYTHON_VERSION)
+# Get Python paths based on the Python version and where it is installed on the docker image
+PYTHON_PKG_PATH=$($PYTHON_BIN -c 'import site; print(site.getsitepackages()[0])')
+PYTHON_LIB=$($PYTHON_BIN -c "from sysconfig import get_paths as gp; print(gp()['stdlib'])")
+PYTHON_INCLUDE=$($PYTHON_BIN -c "from sysconfig import get_paths as gp; print(gp()['include'])")
+PYTHON_NUMPY_INCLUDE=$($PYTHON_BIN -c "import numpy; print(numpy.get_include())")
+
 # Make sure python3.7 is default (instead of  python3.6)
 #update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.7 1
 # -------------------------------------------------------------------- |
@@ -113,6 +118,14 @@ make -j8
 make install
 ldconfig
 
+# For some unknown reasons, OpenCV has not worked with Python 3.7 yet.
+# Use pip
+if [ $OPENCV_CONTRIB = 'NO' ]; then
+  $PYTHON_BIN -m pip install opencv-python==$OPENCV_VERSION
+fi
+if [ $OPENCV_CONTRIB = 'YES' ]; then
+  $PYTHON_BIN -m pip install opencv-contrib-python==$OPENCV_VERSION
+fi
 
 # 4. EXECUTE SOME OPENCV EXAMPLES AND COMPILE A DEMONSTRATION
 

@@ -1,3 +1,4 @@
+# Install packages that for the default user
 # NOTE: do not use '.' before any script
 # i.e:
 # $PKG_LIST_DIR/install_pytorch1.8.sh

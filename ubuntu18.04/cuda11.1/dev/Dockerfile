@@ -12,12 +12,13 @@ RUN apt-get update
 
 
 # Add an user. By default, user name is given from build_img.sh
-ARG user_name=saicny
+ARG user_name=developer
 ARG user_id=1000
 ARG g_id=100
 RUN echo "----------------------creating an user $user_name"
 
 # To find user id on your host machine, use: $id -u  and $id -g
+RUN apt-get install sudo
 RUN export uid=$user_id gid=$g_id && \
     mkdir -p /home/$user_name && \
     echo "$user_name:x:${uid}:${gid}:$user_name,,,:/home/$user_name:/bin/bash" >> /etc/passwd && \
@@ -74,6 +75,7 @@ RUN git clone --recurse-submodules https://github.com/VundleVim/Vundle.vim.git $
 
 # Do this manually upon logging into the docker container
 #RUN vim +PluginInstall +qall
+#RUN cd $HOME/.vim/bundle/YouCompleteMe && python3 install.py
 #RUN cd $HOME/.vim/bundle/YouCompleteMe && python3 install.py
 
 # (Optional) Configure tmux

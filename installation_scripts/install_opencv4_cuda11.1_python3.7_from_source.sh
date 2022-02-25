@@ -1,22 +1,55 @@
 ######################################
-# INSTALL OPENCV ON UBUNTU OR DEBIAN #
+# INSTALL OPENCV ON UBUNTU OR DEBIAN
+# Work with Cuda11.1
 ######################################
 
 # -------------------------------------------------------------------- |
 #                       SCRIPT OPTIONS                                 |
 # ---------------------------------------------------------------------|
-OPENCV_VERSION='4.2.0.34'       # Version to be installed
+OPENCV_VERSION='4.4.0.46'       # Version to be installed
 OPENCV_CONTRIB='YES'          # Install OpenCV's extra modules (YES/NO)
-PYTHON_VERSION='python3.6'
+PYTHON_VERSION='python3.7'
 # Get Python paths based on the Python version and where it is installed on the docker image
 PYTHON_BIN=$(which $PYTHON_VERSION)
+# echo "-----------------"
+# echo "Get root dir to the python's bin path"
+# iter=0
+# for i in $(echo $PYTHON_BIN | tr "bin" " ")
+# do
+#   echo $i
+#   if [ $iter -eq 0 ]
+#   then
+#     root_dir=$i
+#     echo "iter = $iter, Set root_dir = $root_dir"
+#   else
+#     echo "iter = $iter, skip!"
+#   fi
+#   iter=$(($iter + 1))
+# done
+# echo "Root dir: ${root_dir}"
+
+# # Other paths
+# PYTHON_LIB=${root_dir}lib/python3.7
+# PYTHON_INCLUDE=${root_dir}include/python3.7
+# PYTHON_PKG_PATH=${root_dir}lib/python3.7/dist-packages
+# PYTHON_NUMPY_INCLUDE=${root_dir}lib/python3.7/dist-packages/numpy/core/include
+
 # Get Python paths based on the Python version and where it is installed on the docker image
+
+# PYTHON_BIN=$($PYTHON_BIN -c "import sys; print(sys.executable)")
 PYTHON_PKG_PATH=$($PYTHON_BIN -c 'import site; print(site.getsitepackages()[0])')
 PYTHON_LIB=$($PYTHON_BIN -c "from sysconfig import get_paths as gp; print(gp()['stdlib'])")
 PYTHON_INCLUDE=$($PYTHON_BIN -c "from sysconfig import get_paths as gp; print(gp()['include'])")
 PYTHON_NUMPY_INCLUDE=$($PYTHON_BIN -c "import numpy; print(numpy.get_include())")
-# Make sure python3.6 is default (instead of  python3.6)
-#update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.6 1
+
+# echo $PYTHON_BIN
+# echo $PYTHON_LIB
+# echo $PYTHON_INCLUDE
+# echo $PYTHON_PKG_PATH
+# echo $PYTHON_NUMPY_INCLUDE
+
+# Make sure python3.7 is default (instead of  python3.6)
+#update-alternatives --install /usr/bin/python3 python3 /usr/bin/python3.7 1
 # -------------------------------------------------------------------- |
 
 # |          THIS SCRIPT IS TESTED CORRECTLY ON          |
@@ -78,12 +111,12 @@ apt-get install -y doxygen unzip wget
 
 # 3. INSTALL THE LIBRARY
 
-wget https://github.com/opencv/opencv/archive/${OPENCV_VERSION}.zip --no-check-certificate
+wget https://github.com/opencv/opencv/archive/${OPENCV_VERSION}.zip
 unzip ${OPENCV_VERSION}.zip && rm ${OPENCV_VERSION}.zip
 mv opencv-${OPENCV_VERSION} OpenCV
 
 if [ $OPENCV_CONTRIB = 'YES' ]; then
-  wget https://github.com/opencv/opencv_contrib/archive/${OPENCV_VERSION}.zip --no-check-certificate
+  wget https://github.com/opencv/opencv_contrib/archive/${OPENCV_VERSION}.zip
   unzip ${OPENCV_VERSION}.zip && rm ${OPENCV_VERSION}.zip
   mv opencv_contrib-${OPENCV_VERSION} opencv_contrib
   mv opencv_contrib OpenCV
@@ -115,6 +148,7 @@ fi
 make -j8
 make install
 ldconfig
+
 
 # For some unknown reasons, OpenCV has not worked with Python 3.7 yet.
 # Use pip

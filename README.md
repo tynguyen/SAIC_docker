@@ -56,6 +56,24 @@ docker login
 ```
 
 # Available Images
+## Cuda11.1
+### Base image: tynguyen/ubuntu1804:base-cuda11.1-cudnn8
+Based on nvidia/cuda:11.1.1-cudnn8-devel-ubuntu18.04
+- [x] ubuntu18.04
+- [x] cuda11.1
+- [x] cudnn8
+- [x] python3.7.9
+- [x] cmake 3.20.3
+- [x] vim 8.2
+- [x] YouCompleteMe for VIM.
+
+### Dev image: tynguyen/ubuntu1804:dev-cuda11.1-cudnn8
+Based on tynguyen/ubuntu1804:base-cuda11.1-cudnn8
+#### Add
+- [x] Opencv4.4.0 with python3.7
+- [] pytorch
+- [] tensorflow
+
 ## Cuda10.2
 ### Base image: tynguyen/ubuntu1804:base-cuda10.2-cudnn8
 Based on nvidia/cuda:10.2-devel-ubuntu18.04
@@ -65,13 +83,13 @@ Based on nvidia/cuda:10.2-devel-ubuntu18.04
 - [x] python3.6.9
 - [x] cmake 3.20.3
 - [x] vim 8.2
-- [x] Opencv4 python3.6 via pip
+- [x] Opencv4.2 python3.6 via pip
 - [x] YouCompleteMe for VIM.
 
 ### Dev image: tynguyen/ubuntu1804:dev-cuda10.2-cudnn8
 Based on tynguyen/ubuntu1804:base-cuda10.2-cudnn8
 Adding
-- [x] Opencv4 python3.6 from source
+- [x] Opencv4.2 python3.6 from source
 
 ### Kinect image: tynguyen/ubuntu1804:kinect-cuda10.2-cudnn8
 Based on tynguyen/ubuntu1804:dev-cuda10.2-cudnn8
@@ -107,17 +125,6 @@ And add a couple of arguments into docker run. Refer to `create_container.sh` fo
 
 [Reference 2](https://github.com/TheBiggerGuy/docker-pulseaudio-example)
 
-## Cuda11.1
-### Base image: tynguyen/ubuntu1804:base-cuda11.1-cudnn8
-Based on nvidia/cuda:10.2-devel-ubuntu18.04
-- [x] ubuntu18.04
-- [x] cuda11.1
-- [x] cudnn8
-- [x] python3.6.9
-- [x] cmake 3.20.3
-- [x] vim 8.2
-- [x] Opencv4 python3.6 via pip
-- [x] YouCompleteMe for VIM.
 
 # Create Your Own Image
 Based on the existing images, you're supposed to create an image that fits your need before creating a container using a name given by the following syntax
