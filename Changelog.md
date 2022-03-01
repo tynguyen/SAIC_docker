@@ -3,11 +3,7 @@ All major changes are listed here.
 
 # Feb 22nd, 2022
 ## Added
-- [x] Attempted to install `zsh` on `my_docker` image. Does not work yet. The following files were created
-```
-my_docker/user_specific_package_manager.sh
-installation_scripts/install_zsh.sh
-```
+- [x] Install `zsh` on `my_docker` image.
 - [x] Install Opencv4 on the dev docker image
 - [x] Install Pytorch1.9 on the dev docker image
 

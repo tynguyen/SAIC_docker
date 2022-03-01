@@ -1,6 +1,6 @@
 # For the following ARG variables, an default value is given to use if not set through --build_arg  i.e. docker build --build_arg base_docker_img_name=nvidia/cuda ....
 ARG base_docker_img_name="tynguyen/ubuntu18.04"
-ARG base_docker_img_tag="base-cuda11.1-cudnn8"
+ARG base_docker_img_tag="dev-cuda11.1-cudnn8"
 
 FROM ${base_docker_img_name}:${base_docker_img_tag}
 
@@ -12,7 +12,8 @@ RUN apt-get update
 
 
 # Add an user. By default, user name is given from build_img.sh
-ARG user_name=saicny
+ARG user_name=tynguyen
+ENV HOME=/home/$user_name
 ARG user_id=1000
 ARG g_id=100
 RUN echo "----------------------creating an user $user_name"
@@ -50,11 +51,9 @@ RUN rm -rf $PKG_LIST_DIR
 ENV NVIDIA_VISIBLE_DEVICES ${NVIDIA_VISIBLE_DEVICES:-all}
 ENV NVIDIA_DRIVER_CAPABILITIES ${NVIDIA_DRIVER_CAPABILITIES:+$NVIDIA_DRIVER_CAPABILITIES,}graphics
 
-
 #----------------------------------------------#
 # Switch to your user name. Not be abl to install any that requires SUDO
 USER $user_name
-ENV HOME=/home/$user_name
 
 # (Optional) Configure .bashrc, vim, tmux
 ARG cfg_dir="cfg_scripts"
@@ -81,3 +80,6 @@ COPY $cfg_dir/.tmux.conf $HOME/.tmux.conf
 
 # Default repository after logging in
 WORKDIR $HOME
+
+# Run zsh shell at launch time
+ENTRYPOINT ["zsh"]
