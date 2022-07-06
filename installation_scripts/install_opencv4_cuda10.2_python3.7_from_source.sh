@@ -6,7 +6,7 @@
 # -------------------------------------------------------------------- |
 #                       SCRIPT OPTIONS                                 |
 # ---------------------------------------------------------------------|
-OPENCV_VERSION='4.2.0.34'       # Version to be installed
+OPENCV_VERSION='4.6.0'       # Version to be installed
 OPENCV_CONTRIB='YES'          # Install OpenCV's extra modules (YES/NO)
 PYTHON_VERSION='python3.7'
 # Get Python paths based on the Python version and where it is installed on the docker image
@@ -80,12 +80,12 @@ apt-get install -y doxygen unzip wget
 
 # 3. INSTALL THE LIBRARY
 
-wget https://github.com/opencv/opencv/archive/${OPENCV_VERSION}.zip
+wget https://github.com/opencv/opencv/archive/${OPENCV_VERSION}.zip --no-check-certificate
 unzip ${OPENCV_VERSION}.zip && rm ${OPENCV_VERSION}.zip
 mv opencv-${OPENCV_VERSION} OpenCV
 
 if [ $OPENCV_CONTRIB = 'YES' ]; then
-  wget https://github.com/opencv/opencv_contrib/archive/${OPENCV_VERSION}.zip
+  wget https://github.com/opencv/opencv_contrib/archive/${OPENCV_VERSION}.zip --no-check-certificate
   unzip ${OPENCV_VERSION}.zip && rm ${OPENCV_VERSION}.zip
   mv opencv_contrib-${OPENCV_VERSION} opencv_contrib
   mv opencv_contrib OpenCV

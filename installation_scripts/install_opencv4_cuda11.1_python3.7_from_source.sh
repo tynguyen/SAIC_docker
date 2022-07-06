@@ -6,7 +6,7 @@
 # -------------------------------------------------------------------- |
 #                       SCRIPT OPTIONS                                 |
 # ---------------------------------------------------------------------|
-OPENCV_VERSION='4.4.0.46'       # Version to be installed
+OPENCV_VERSION='4.6.0'       # Version to be installed
 OPENCV_CONTRIB='YES'          # Install OpenCV's extra modules (YES/NO)
 PYTHON_VERSION='python3.7'
 # Get Python paths based on the Python version and where it is installed on the docker image
