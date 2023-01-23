@@ -1,6 +1,6 @@
 # Base docker image that you want to build upon on
-export BASE_DOCKER_IMG_NAME="tynguyen/ubuntu18.04"
-export BASE_DOCKER_IMG_TAG="dev-cuda11.1-cudnn8"
+export BASE_DOCKER_IMG_NAME="tynguyen/ubuntu20.04"
+export BASE_DOCKER_IMG_TAG="dev-cuda11.3-cudnn8"
 
 : ' Name the docker image that you want to build i.e: $DOCKER_IMG_NAME:$DOCKER_IMG_TAG
 If you do not change anything, by default, your docker image name will be

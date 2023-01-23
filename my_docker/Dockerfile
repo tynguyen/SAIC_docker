@@ -1,6 +1,6 @@
 # For the following ARG variables, an default value is given to use if not set through --build_arg  i.e. docker build --build_arg base_docker_img_name=nvidia/cuda ....
-ARG base_docker_img_name="tynguyen/ubuntu18.04"
-ARG base_docker_img_tag="dev-cuda11.1-cudnn8"
+ARG base_docker_img_name="tynguyen/ubuntu20.04"
+ARG base_docker_img_tag="dev-cuda11.3-cudnn8"
 
 FROM ${base_docker_img_name}:${base_docker_img_tag}
 

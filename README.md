@@ -88,7 +88,7 @@ Based on tynguyen/ubuntu2004:base-cuda11.3-cudnn8
 
 #### Add
 
-- [x] Opencv4.7 with python3.10
+- [] Opencv4.7 with python3.10 | HAVING SOME BUGS
 - [x] pytorch1.12.1 compatible with CUDA11.3
 - [] tensorflow
 

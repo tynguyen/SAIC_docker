@@ -28,7 +28,7 @@ HELP()
 DOCKER_USER=$(whoami)
 
 # Default port mapping
-PORT_OPTS=0.0.0.0:7008:7008
+PORT_OPTS=0.0.0.0:7007:7007
 
 # Default docker image name given from $DOCKER_IMG_NAME
 IMG=$DOCKER_IMG_NAME:$DOCKER_IMG_TAG
